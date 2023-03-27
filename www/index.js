@@ -29,6 +29,7 @@ init().then(_ => {
 
         canvas_ctx.stroke();
     }
+    console.log(world.snake_head_index());
 
     drawWorld();
 })
