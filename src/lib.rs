@@ -6,12 +6,13 @@ use wee_alloc::WeeAlloc;
 static ALLOC: WeeAlloc = WeeAlloc::INIT;
 
 #[wasm_bindgen]
-pub fn greet(name: &str) {
-    alert(name);
+pub struct World {
+    pub width: usize
 }
 
-//importing the JS Alert() to be used to display the name above in greet()
 #[wasm_bindgen]
-extern {
-    pub fn alert(name: &str);
+impl World {
+    pub fn new() -> World {
+        World { width: 8 }
+    }
 }
