@@ -7,7 +7,7 @@ init().then(_ => {
     const world = World.new();
     const worldWidth = world.width();
 
-    const canvas = document.getElementById("snake_canvas");
+    const canvas = <HTMLCanvasElement> document.getElementById("snake_canvas");
     const canvasCtx = canvas.getContext("2d");
 
     canvas.height = worldWidth * CELL_SIZE;
