@@ -45,6 +45,22 @@ init().then(_ => {
         canvasCtx.stroke();
     }
 
-    drawWorld();
-    drawSnake();
+    function paint() {
+        drawWorld();
+        drawSnake();
+    }
+
+    function update() {
+        setTimeout(() => {
+            canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+            world.update();
+            paint();
+            //method below makes the callback to be invoked before the next repaint
+            requestAnimationFrame(update)
+        }, 100)
+    }
+
+    paint();
+    update();
+    
 })
