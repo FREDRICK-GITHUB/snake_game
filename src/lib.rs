@@ -87,10 +87,44 @@ impl World {
         let row = snake_index / self.width;
 
         return match self.snake.direction {
-            Direction::Right => SnakeCell((row * self.width) + (snake_index + 1) % self.width),
-            Direction::Left => SnakeCell((row * self.width) + (snake_index - 1) % self.width),
-            Direction::Up => SnakeCell((snake_index - self.width) % self.size),
-            Direction::Down => SnakeCell((snake_index + self.width) % self.size),
+            Direction::Right => {
+                let threshold = (row + 1) * self.width;
+                if snake_index + 1 == threshold {
+                    SnakeCell(threshold - self.width)
+                }else{
+                    SnakeCell(snake_index + 1)
+                }
+            },
+            Direction::Left => {
+                let threshold = row * self.width;
+                if snake_index == threshold {
+                    SnakeCell(threshold + (self.width - 1))
+                }else{
+                    SnakeCell(snake_index - 1)
+                }
+            },
+            Direction::Up => {
+                let threshold =  snake_index - (row  * self.width);
+                if snake_index == threshold {
+                    SnakeCell((self.size - self.width) + threshold)
+                }else{
+                    SnakeCell(snake_index - self.width)
+                }
+            },
+            Direction::Down => {
+                let threshold = snake_index + ((self.width - row) * self.width);
+                if snake_index + self.width == threshold {
+                    SnakeCell(threshold - ((row + 1) * self.width))
+                }else{
+                    SnakeCell(snake_index + self.width)
+                }
+            },
+
+            // This implementation works as the match above but more expensive in terms of complexity
+            // Direction::Right => SnakeCell((row * self.width) + (snake_index + 1) % self.width),
+            // Direction::Left => SnakeCell((row * self.width) + (snake_index - 1) % self.width),
+            // Direction::Up => SnakeCell((snake_index - self.width) % self.size),
+            // Direction::Down => SnakeCell((snake_index + self.width) % self.size),
         };
     }
 }
