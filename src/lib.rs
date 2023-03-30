@@ -1,4 +1,3 @@
-
 use wasm_bindgen::prelude::*;
 use wee_alloc::WeeAlloc;
 
@@ -8,13 +7,13 @@ static ALLOC: WeeAlloc = WeeAlloc::INIT;
 #[wasm_bindgen]
 #[derive(PartialEq)]
 pub enum Direction {
-    Up, 
+    Up,
     Right,
     Down,
     Left,
 }
 
-struct SnakeCell(usize);
+pub struct SnakeCell(usize);
 
 struct Snake {
     body: Vec<SnakeCell>,
@@ -22,30 +21,35 @@ struct Snake {
 }
 
 impl Snake {
-    fn new(spawn_index: usize) ->Snake {
-        Snake { 
-            body: vec!(SnakeCell(spawn_index)),
+    fn new(spawn_index: usize, size: usize) -> Snake {
+        let mut body = vec![];
+
+        for i in 0..size {
+            body.push(SnakeCell(spawn_index - i));
+        }
+
+        Snake {
+            body,
             direction: Direction::Right,
         }
     }
 }
 
-
 #[wasm_bindgen]
 pub struct World {
     width: usize,
     size: usize,
-    snake: Snake
+    snake: Snake,
 }
 
 #[wasm_bindgen]
 impl World {
     pub fn new(width: usize, snake_index: usize) -> World {
-        World { 
+        World {
             width,
             size: width * width,
-            snake: Snake::new(snake_index)
-         }
+            snake: Snake::new(snake_index, 3),
+        }
     }
 
     pub fn width(&self) -> usize {
@@ -60,39 +64,33 @@ impl World {
         self.snake.direction = direction;
     }
 
-    pub fn update(&mut self) {
+    pub fn snake_length(&self) -> usize {
+        self.snake.body.len()
+    }
+
+    pub fn snake_cells(&self) -> *const SnakeCell {
+        self.snake.body.as_ptr()
+    }
+
+    // cannot return a reference to JS because of borrowing rules
+    // pub fn snake_cells(&self) -> Vec<SnakeCell> {
+    //     self.snake.body
+    // }
+
+    pub fn step(&mut self) {
+        let next_cell = self.generate_next_snake_cell();
+        self.snake.body[0] = next_cell;
+    }
+
+    fn generate_next_snake_cell(&self) -> SnakeCell {
         let snake_index = self.snake_head_index();
-        let  (row, column) = self.index_to_cell(snake_index);
+        let row = snake_index / self.width;
 
-        let (row, column) = match self.snake.direction {
-            Direction::Right => {
-                (row, (column + 1) % self.width)
-            },
-            Direction::Left => {
-                 (row, (column - 1) % self.width)
-            },
-            Direction::Up => {
-                ((row - 1) % self.width, column)
-            },
-            Direction::Down => {
-                ((row + 1) % self.width, column)
-            }
+        return match self.snake.direction {
+            Direction::Right => SnakeCell((row * self.width) + (snake_index + 1) % self.width),
+            Direction::Left => SnakeCell((row * self.width) + (snake_index - 1) % self.width),
+            Direction::Up => SnakeCell((snake_index - self.width) % self.size),
+            Direction::Down => SnakeCell((snake_index + self.width) % self.size),
         };
-
-        let next_index = self.cell_to_index( row, column);
-        self.set_snake_head(next_index);
-
-    }
-
-    fn set_snake_head(&mut self, index: usize){
-        self.snake.body[0].0 = index;
-    }
-
-    fn index_to_cell(&self, index: usize) -> (usize, usize){
-        (index / self.width, index % self.width)
-    }
-
-    fn cell_to_index(&self, row: usize, column: usize) -> usize{
-        (row * self.width) + column
     }
 }
