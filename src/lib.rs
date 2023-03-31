@@ -4,9 +4,9 @@ use wee_alloc::WeeAlloc;
 #[global_allocator]
 static ALLOC: WeeAlloc = WeeAlloc::INIT;
 
-#[wasm_bindgen(module = "/www/utils/date.js")]
+#[wasm_bindgen(module = "/www/utils/random.js")]
 extern {
-    fn now() -> usize;
+    fn random(max: usize) -> usize;
 }
 
 #[wasm_bindgen]
@@ -55,7 +55,7 @@ impl World {
     pub fn new(width: usize, snake_index: usize) -> World {
 
         let size = width * width;
-        let reward_cell = now() % size;
+        let reward_cell = random(size);
 
         World {
             width,
