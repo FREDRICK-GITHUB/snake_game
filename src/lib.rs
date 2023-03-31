@@ -13,6 +13,7 @@ pub enum Direction {
     Left,
 }
 
+#[derive(Clone)]
 pub struct SnakeCell(usize);
 
 struct Snake {
@@ -61,6 +62,10 @@ impl World {
     }
 
     pub fn change_snake_dir(&mut self, direction: Direction) {
+        let next_cell = self.generate_next_snake_cell(&direction);
+
+        if self.snake.body[1].0 == next_cell.0 { return; }
+
         self.snake.direction = direction;
     }
 
@@ -78,15 +83,22 @@ impl World {
     // }
 
     pub fn step(&mut self) {
-        let next_cell = self.generate_next_snake_cell();
+        let temporary_array = self.snake.body.clone();
+        let next_cell = self.generate_next_snake_cell(&self.snake.direction);
         self.snake.body[0] = next_cell;
+
+        let length = self.snake.body.len();
+
+        for i in 1..length {
+            self.snake.body[i] = SnakeCell(temporary_array[i - 1].0);
+        }
     }
 
-    fn generate_next_snake_cell(&self) -> SnakeCell {
+    fn generate_next_snake_cell(&self, direction: &Direction) -> SnakeCell {
         let snake_index = self.snake_head_index();
         let row = snake_index / self.width;
 
-        return match self.snake.direction {
+        return match direction {
             Direction::Right => {
                 let threshold = (row + 1) * self.width;
                 if snake_index + 1 == threshold {
