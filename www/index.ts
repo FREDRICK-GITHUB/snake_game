@@ -97,7 +97,7 @@ init().then(wasm => {
         )
 
         snakeCells
-        .filter((cellIndex, i) => !(i > 0 && cellIndex === snakeCells[0]))
+            .filter((cellIndex, i) => !(i > 0 && cellIndex === snakeCells[0]))
             // commented lines below here outline the second variant as the line above this comment for 
             // ensuring that snake head cell is always visible even after a crush
             // .slice() //creating a copy of the array
