@@ -4,7 +4,7 @@ import { random } from "./utils/random";
 
 init().then(wasm => {
     const CELL_SIZE = 20;
-    const WORLD_WIDTH = 4;
+    const WORLD_WIDTH = 8;
     const snakeSpawnIndex = random(WORLD_WIDTH * WORLD_WIDTH);
 
     const world = World.new(WORLD_WIDTH, snakeSpawnIndex);
@@ -140,6 +140,13 @@ init().then(wasm => {
     }
 
     function play() {
+        const status = world.game_status();
+
+        if (status == GameStatus.Won || status == GameStatus.Lost) {
+            gameCotrolButton.textContent = "Re-Play";
+            return;
+        }
+
         const fps = 3;
         setTimeout(() => {
             canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
