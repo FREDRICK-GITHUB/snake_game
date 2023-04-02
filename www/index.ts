@@ -25,7 +25,7 @@ init().then(wasm => {
             gameCotrolButton.textContent = "Playing...";
             world.start_game();
             play();
-        }else {
+        } else {
             location.reload();
         }
 
@@ -96,20 +96,27 @@ init().then(wasm => {
             world.snake_length(),
         )
 
-        snakeCells.forEach((cellIndex, i) => {
-            const col = cellIndex % worldWidth;
-            const row = Math.floor(cellIndex / worldWidth);
+        snakeCells
+        .filter((cellIndex, i) => !(i > 0 && cellIndex === snakeCells[0]))
+            // commented lines below here outline the second variant as the line above this comment for 
+            // ensuring that snake head cell is always visible even after a crush
+            // .slice() //creating a copy of the array
+            // .reverse()
+            .forEach((cellIndex, i) => {
+                const col = cellIndex % worldWidth;
+                const row = Math.floor(cellIndex / worldWidth);
 
-            canvasCtx.fillStyle = i === 0 ? "#7878db" : "#000000";
+                // canvasCtx.fillStyle = i === snakeCells.length - 1 ? "#7878db" : "#000000";
+                canvasCtx.fillStyle = i === 0 ? "#7878db" : "#000000";
 
-            canvasCtx.beginPath();
-            canvasCtx.fillRect(
-                col * CELL_SIZE,
-                row * CELL_SIZE,
-                CELL_SIZE,
-                CELL_SIZE
-            );
-        })
+                canvasCtx.beginPath();
+                canvasCtx.fillRect(
+                    col * CELL_SIZE,
+                    row * CELL_SIZE,
+                    CELL_SIZE,
+                    CELL_SIZE
+                );
+            })
 
         canvasCtx.stroke();
     }
